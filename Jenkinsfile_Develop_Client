@@ -1,0 +1,33 @@
+#!groovy
+
+/*
+
+Get code from develop branch and run unit tests  
+
+Check out code
+unit test
+
+*/
+
+node {
+
+  stage 'check out code'
+
+    echo 'Git pull'
+    git branch: 'develop', credentialsId: '4bdd0baf-6135-4ea8-8169-743a48e570f8', url: 'git@git.tom.redhatmobile.com:psdev/Keyang-Demo-Project-Keyang-Demo-Client-App.git'
+  
+
+  stage 'setup'
+  
+
+    def nodeHome = tool name: 'version 0.30.10', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+    env.PATH = "${nodeHome}/bin:${env.PATH}"
+    sh "node --version"
+    sh "npm install ."
+  
+
+  stage 'unit tests'
+  
+    sh "gulp test:unit"
+
+}

@@ -1,0 +1,48 @@
+#!groovy
+
+/* 
+
+get code from test branch, run tests, do build and create artifact, email team
+
+checkout code
+unit test
+e2e test
+build
+Send build to testers
+
+*/
+
+
+node {
+
+  stage 'check out code'
+
+    echo 'Git pull'
+    git branch: 'test', credentialsId: '4bdd0baf-6135-4ea8-8169-743a48e570f8', url: 'git@git.tom.redhatmobile.com:psdev/Keyang-Demo-Project-Keyang-Demo-Client-App.git'
+  
+
+  stage 'setup'
+  
+
+    def nodeHome = tool name: 'version 0.30.10', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+    env.PATH = "${nodeHome}/bin:${env.PATH}"
+    sh "node --version"
+    sh "npm install ."
+  
+
+  stage 'unit tests'
+  
+    sh "gulp test:unit"
+
+  
+  stage 'unit e2e'
+  
+    sh "gulp test:e2e"
+
+  
+  stage 'build'
+  
+    sh "gulp fhc-build-and-email"
+    sh "ls ./binaries"
+
+}

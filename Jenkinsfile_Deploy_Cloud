@@ -1,0 +1,42 @@
+#!groovy
+
+/*
+
+Carry out tests on cloud code, test branch, and deploy if tests pass
+
+Checkout code
+Unit test
+Auto - Stage cloud test environment with “test” branch
+
+*/
+
+node {
+
+  stage 'checkout code'
+
+    echo 'Git pull'
+    git branch: 'test', credentialsId: '4bdd0baf-6135-4ea8-8169-743a48e570f8', url: 'git@git.tom.redhatmobile.com:psdev/Keyang-Demo-Project-Keyang-Demo-Cloud-App.git'
+
+
+  stage 'setup'
+
+    sh "apt-get -y update"
+    sh "apt-get -y install build-essential"
+    def nodeHome = tool name: 'version 0.30.10', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+    env.PATH = "${nodeHome}/bin:${env.PATH}"
+    sh "node --version"
+    sh "fhc -v"
+    sh "npm install ."
+
+
+  stage 'unit tests'
+
+    sh "gulp test:unit"
+
+
+  stage 'deploy cloud code'
+    
+    sh "gulp fhc-cloud-deploy"
+
+
+}
