@@ -43,5 +43,7 @@ node {
   
     sh "gulp fhc-build-and-upload-binary"
     sh "ls ./binaries"
+    archive "binaries/**"
+    sh "rm -rf ./binaries"
 
 }
